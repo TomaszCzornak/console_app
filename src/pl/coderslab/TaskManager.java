@@ -1,12 +1,18 @@
 package pl.coderslab;
 
-import java.io.*;
+import org.apache.commons.lang3.ArrayUtils;
+
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+
 
 public class TaskManager {
     static String[][] myArray;
@@ -34,9 +40,9 @@ public class TaskManager {
                 case "remove":
                     removeTask();
                     break;
-//            case "list":
-//                listTask();
-//                break;
+                case "list":
+                    listTask();
+                    break;
                 case "exit":
                     exit("tasks.csv", myArray);
                     System.out.println(ConsoleColors.RED + "Bye, bye.");
@@ -84,7 +90,7 @@ public class TaskManager {
         Scanner scan = new Scanner(System.in);
         String task = scan.nextLine();
         myArray = Arrays.copyOf(myArray, myArray.length + 1);
-        myArray[myArray.length-1] = new String[3];
+        myArray[myArray.length - 1] = new String[3];
         myArray[rows][0] = task;
         System.out.println("Please add task due date");
         String dueDate = scan.nextLine();
@@ -96,34 +102,16 @@ public class TaskManager {
 
     }
 
-    private static void removeTask() throws IOException {
-        Scanner sc = new Scanner(new BufferedReader(new FileReader("tasks.csv")));
-        int rows = numberoflines();
-        int columns = 3;
-        String[][] myArray = new String[rows][3];
-        while (sc.hasNextLine()) {
-            for (int i = 0; i < myArray.length; i++) {
-                String[] line = sc.nextLine().split(",");
-                for (int j = 0; j < line.length; j++) {
-                    myArray[i][j] = line[j];
-                }
-            }
-        }
-        rows = numberoflines();
-        columns = 3;
+    private static void removeTask() {
         System.out.println("Please select number to remove");
         Scanner scan = new Scanner(System.in);
         int numberToRemove = scan.nextInt();
-        myArray = Arrays.copyOf(myArray, myArray.length - 1);
-        for (int i = 0; i < myArray.length; i++) {
-            for (int j = 0; j < myArray.length; j++) {
-                if (i == numberToRemove) {
-                    continue;
-                } else {
-                    myArray[i][j] = myArray[i][j];
-                }
-            }
 
+        for (int i = 0; i < myArray.length; i++) {
+            if (i == numberToRemove) {
+                myArray = ArrayUtils.remove(myArray, i);
+
+            }
         }
         System.out.println(Arrays.deepToString(myArray));
 
@@ -142,7 +130,7 @@ public class TaskManager {
 
     public static String[][] readFileToTab(String fileName) throws IOException {
         Path dir = Paths.get("tasks.csv");
-        String [][] table = null;
+        String[][] table = null;
         List<String> strings = Files.readAllLines(dir);
         table = new String[strings.size()][strings.get(0).split(",").length];
         for (int i = 0; i < strings.size(); i++) {
@@ -154,4 +142,16 @@ public class TaskManager {
         return table;
     }
 
+    public static void listTask() {
+        for (int k = 0; k < myArray.length; k++) {
+            System.out.print(k + ": ");
+            for (int l = 0; l < myArray[k].length; l++) {
+
+                System.out.print(myArray[k][l] + " ");
+
+            }
+            System.out.println();
+        }
+
+    }
 }
