@@ -3,7 +3,6 @@ package pl.coderslab;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -57,7 +56,7 @@ public class TaskManager {
     }
 
     public static void DisplayMenu() {
-        //    wyświetlanie dostępnych :
+        //    wyświetlanie dostępnych opcji
         System.out.println(ConsoleColors.BLUE + "Please select an option" + ConsoleColors.RESET);
         String[] options = {"add", "remove", "list", "exit"};
         System.out.println(options[0]);
@@ -68,11 +67,7 @@ public class TaskManager {
 
     }
 
-    public static String readFile(String fileName) throws IOException {
-        FileInputStream file = new FileInputStream(fileName);
-        byte[] bytes = file.readAllBytes();
-        return new String(bytes);
-    }
+
 
     public static int numberoflines() throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader("tasks.csv"));
