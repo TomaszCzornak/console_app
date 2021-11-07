@@ -1,50 +1,53 @@
 package pl.coderslab;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class TaskManager {
+    static String[][] myArray;
+    Scanner sc = new Scanner(new BufferedReader(new FileReader("tasks.csv")));
+    int rows = numberoflines();
+    int columns = 3;
+
+    public TaskManager() throws IOException {
+    }
+
 
     public static void main(String[] args) throws IOException {
-/*        Scanner sc = new Scanner(new BufferedReader(new FileReader("tasks.csv")));
-        int rows = numberoflines();
-        int columns = 3;
-        String[][] myArray = new String[rows][3];
-        while (sc.hasNextLine()) {
-            for (int i = 0; i < myArray.length; i++) {
-                String[] line = sc.nextLine().split(",");
-                for (int j = 0; j < line.length; j++) {
-                    myArray[i][j] = line[j];
-                }
-            }
-        }*/
-
-//reading tasks file into 2D array
-
+        myArray = readFileToTab("tasks.csv");
 //        System.out.println(Arrays.deepToString(myArray));
 //        wywołanie metody do wyświetlenia menu opcji
         DisplayMenu();
-
-
         Scanner scan = new Scanner(System.in);
-        switch (scan.nextLine()) {
-            case "add":
-                addTask();
-                break;
-/*  *//*          case "remove":
-                removeTask();
-                break;
-            case "list":
-                listTask();
-                break;
-            case "exit":
-*//*                exit();*/
-            default:
-                System.out.println("Please select a correct option.");
+        while (scan.hasNextLine()) {
+            String choice = scan.nextLine();
 
+            switch (choice) {
+                case "add":
+                    addTask();
+                    break;
+                case "remove":
+                    removeTask();
+                    break;
+//            case "list":
+//                listTask();
+//                break;
+                case "exit":
+                    exit("tasks.csv", myArray);
+                    System.out.println(ConsoleColors.RED + "Bye, bye.");
+                    System.exit(0);
+                    break;
+                default:
+                    System.out.println("Please select a correct option.");
+
+            }
+            DisplayMenu();
         }
-
     }
 
     public static void DisplayMenu() {
@@ -73,7 +76,27 @@ public class TaskManager {
         return lines;
     }
 
-    public static void addTask() throws IOException {
+    private static void addTask() throws IOException {
+
+        int rows = numberoflines();
+        int columns = 3;
+        System.out.println("Please add task description");
+        Scanner scan = new Scanner(System.in);
+        String task = scan.nextLine();
+        myArray = Arrays.copyOf(myArray, myArray.length + 1);
+        myArray[myArray.length-1] = new String[3];
+        myArray[rows][0] = task;
+        System.out.println("Please add task due date");
+        String dueDate = scan.nextLine();
+        myArray[rows][1] = dueDate;
+        System.out.println("Is your task important: true/ false");
+        String importance = scan.nextLine();
+        myArray[rows][2] = importance;
+        System.out.println(Arrays.deepToString(myArray));
+
+    }
+
+    private static void removeTask() throws IOException {
         Scanner sc = new Scanner(new BufferedReader(new FileReader("tasks.csv")));
         int rows = numberoflines();
         int columns = 3;
@@ -88,25 +111,47 @@ public class TaskManager {
         }
         rows = numberoflines();
         columns = 3;
-//        myArray = new String[rows][3];
-        System.out.println("Please add task description");
+        System.out.println("Please select number to remove");
         Scanner scan = new Scanner(System.in);
-        String task = scan.nextLine();
-        String  added [][] = Arrays.copyOf(myArray, myArray.length+1);
-        added[rows-1][0] = task;
-        System.out.println("Please add task due date");
-        String dueDate = scan.nextLine();
-        added[rows-1][1] = dueDate;
-        System.out.println("Is your task important: true/ false");
-        String importance = scan.nextLine();
-        added[rows-1][2] = importance;
-        System.out.println(Arrays.deepToString(added));
-        BufferedWriter outputWriter = null;
-        outputWriter = new BufferedWriter(new FileWriter("tasks.csv"));
+        int numberToRemove = scan.nextInt();
+        myArray = Arrays.copyOf(myArray, myArray.length - 1);
+        for (int i = 0; i < myArray.length; i++) {
+            for (int j = 0; j < myArray.length; j++) {
+                if (i == numberToRemove) {
+                    continue;
+                } else {
+                    myArray[i][j] = myArray[i][j];
+                }
+            }
 
-//        myArray[rows][1] = scan.nextLine();
+        }
+        System.out.println(Arrays.deepToString(myArray));
+
+    }
+
+    public static void exit(String fileName, String[][] table) throws IOException {
+        Path dir = Paths.get(fileName);
+
+        String[] lines = new String[myArray.length];
+        for (int i = 0; i < table.length; i++) {
+            lines[i] = String.join(",", table[i]);
+        }
+        Files.write(dir, Arrays.asList(lines));
+        System.out.println(Arrays.deepToString(myArray));
+    }
+
+    public static String[][] readFileToTab(String fileName) throws IOException {
+        Path dir = Paths.get("tasks.csv");
+        String [][] table = null;
+        List<String> strings = Files.readAllLines(dir);
+        table = new String[strings.size()][strings.get(0).split(",").length];
+        for (int i = 0; i < strings.size(); i++) {
+            String[] split = strings.get(i).split(",");
+            for (int j = 0; j < split.length; j++) {
+                table[i][j] = split[j];
+            }
+        }
+        return table;
     }
 
 }
-
-
