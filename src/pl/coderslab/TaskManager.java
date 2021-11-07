@@ -124,7 +124,7 @@ public class TaskManager {
     }
 
     public static String[][] readFileToTab(String fileName) throws IOException {
-        Path dir = Paths.get("tasks.csv");
+        Path dir = Paths.get(fileName);
         String[][] table ;
         List<String> strings = Files.readAllLines(dir);
         table = new String[strings.size()][strings.get(0).split(",").length];
