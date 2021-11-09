@@ -16,8 +16,6 @@ import java.util.Scanner;
 public class TaskManager {
     static String[][] myArray;
     Scanner sc = new Scanner(new BufferedReader(new FileReader("tasks.csv")));
-    int rows = numberoflines();
-    int columns = 3;
 
     public TaskManager() throws IOException {
     }
@@ -37,11 +35,17 @@ public class TaskManager {
                     addTask();
                     break;
                 case "remove":
-                    removeTask();
-                    break;
+                    try {
+                        removeTask();
+                        break;
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        System.out.println("Please select available task");
+                        removeTask();
+                    }
                 case "list":
                     listTask();
                     break;
+
                 case "exit":
                     exit("tasks.csv", myArray);
                     System.out.println(ConsoleColors.RED + "Bye, bye.");
@@ -68,31 +72,21 @@ public class TaskManager {
     }
 
 
-
-    public static int numberoflines() throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader("tasks.csv"));
-        int lines = 0;
-        while (reader.readLine() != null) lines++;
-        reader.close();
-        return lines;
-    }
-
     private static void addTask() throws IOException {
 
-        int rows = numberoflines();
-        int columns = 3;
+//        int rows = numberoflines();
         System.out.println("Please add task description");
         Scanner scan = new Scanner(System.in);
         String task = scan.nextLine();
         myArray = Arrays.copyOf(myArray, myArray.length + 1);
         myArray[myArray.length - 1] = new String[3];
-        myArray[rows][0] = task;
+        myArray[myArray.length - 1][0] = task;
         System.out.println("Please add task due date");
         String dueDate = scan.nextLine();
-        myArray[rows][1] = dueDate;
+        myArray[myArray.length - 1][1] = dueDate;
         System.out.println("Is your task important: true/ false");
         String importance = scan.nextLine();
-        myArray[rows][2] = importance;
+        myArray[myArray.length - 1][2] = importance;
         System.out.println(Arrays.deepToString(myArray));
 
     }
@@ -102,11 +96,16 @@ public class TaskManager {
         Scanner scan = new Scanner(System.in);
         int numberToRemove = scan.nextInt();
 
-        for (int i = 0; i < myArray.length; i++) {
-            if (i == numberToRemove) {
-                myArray = ArrayUtils.remove(myArray, i);
+        if (numberToRemove <= myArray.length - 1) {
+            for (int i = 0; i < myArray.length; i++) {
+                if (i == numberToRemove) {
+                    myArray = ArrayUtils.remove(myArray, i);
 
+                }
             }
+
+        } else {
+            throw new ArrayIndexOutOfBoundsException("Please select available task");
         }
         System.out.println(Arrays.deepToString(myArray));
 
@@ -125,7 +124,7 @@ public class TaskManager {
 
     public static String[][] readFileToTab(String fileName) throws IOException {
         Path dir = Paths.get(fileName);
-        String[][] table ;
+        String[][] table;
         List<String> strings = Files.readAllLines(dir);
         table = new String[strings.size()][strings.get(0).split(",").length];
         for (int i = 0; i < strings.size(); i++) {
